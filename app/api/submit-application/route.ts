@@ -1,17 +1,30 @@
 import { NextResponse } from "next/server"
 import { saveApplication, isEmailRegistered, isDiscordIdRegistered } from "@/lib/storage"
 import { Resend } from 'resend'
+import { Redis } from '@upstash/redis'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
+    // Test Redis connection first
+    const redis = new Redis({
+      url: 'https://proper-cheetah-10029.upstash.io',
+      token: 'ASctAAIjcDFlZDUzOWE4YTQ1ZmM0NWI2OWU1OTMxMTcwNDA5OTgyMnAxMA',
+    })
+
+    // Log connection test
+    console.log('Testing Redis connection...')
+    await redis.set('test-key', 'test-value')
+    const testValue = await redis.get('test-key')
+    console.log('Redis test result:', testValue)
+
     // Log environment variables (redacted for security)
-    console.log('Redis URL exists:', !!process.env.KV_REST_API_URL);
-    console.log('Redis Token exists:', !!process.env.KV_REST_API_TOKEN);
+    console.log('Redis URL exists:', !!process.env.KV_REST_API_URL)
+    console.log('Redis Token exists:', !!process.env.KV_REST_API_TOKEN)
 
     const data = await request.json()
-    console.log('Received data:', data);
+    console.log('Received data:', data)
 
     // Check for existing email and discord ID
     const emailExists = await isEmailRegistered(data.email)
@@ -31,7 +44,7 @@ export async function POST(request: Request) {
     }
 
     const savedApplication = await saveApplication(data)
-    console.log('Saved application:', savedApplication);
+    console.log('Saved application:', savedApplication)
     
     // Send confirmation email
     await resend.emails.send({
@@ -51,16 +64,18 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    // Log the full error
-    console.error('Detailed error:', error);
-    
+    // Log detailed error
+    console.error('Submission error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Failed to submit application'
+        error: error instanceof Error ? error.message : 'Failed to submit application',
+        details: error instanceof Error ? error.stack : undefined
       },
       { status: 500 }
-    );
+    )
   }
 }
 
