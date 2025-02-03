@@ -10,11 +10,24 @@ export interface Application {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  address: string;
-  education: string;
-  experience: string;
-  skills: string;
+  discordId: string;
+  teamName: string;
+  teamMembers: string;
+  teamExperience: string;
+  previousProjects: string;
+  teamExperienceDescription: string;
+  gameGenre: string;
+  gameTitle: string;
+  gameConcept: string;
+  whyWin: string;
+  whyPlayersLike: string;
+  promotionPlan: string;
+  monetizationPlan: string;
+  projectedDAU: number;
+  dayOneRetention: number;
+  developmentTimeline: string;
+  resourcesTools: string;
+  acknowledgment: boolean;
   createdAt: string;
 }
 
