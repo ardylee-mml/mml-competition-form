@@ -2,32 +2,19 @@ import { Redis } from '@upstash/redis'
 import { v4 as uuidv4 } from 'uuid'
 
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL!,
-  token: process.env.KV_REST_API_TOKEN!,
+  url: 'https://proper-cheetah-10029.upstash.io',
+  token: 'ASctAAIjcDFlZDUzOWE4YTQ1ZmM0NWI2OWU1OTMxMTcwNDA5OTgyMnAxMA',
 })
 
 export interface Application {
   id: string;
   name: string;
   email: string;
-  discordId: string;
-  teamName: string;
-  teamMembers: string;
-  teamExperience: string;
-  previousProjects: string;
-  teamExperienceDescription: string;
-  gameGenre: string;
-  gameTitle: string;
-  gameConcept: string;
-  whyWin: string;
-  whyPlayersLike: string;
-  promotionPlan: string;
-  monetizationPlan: string;
-  projectedDAU: number;
-  dayOneRetention: number;
-  developmentTimeline: string;
-  resourcesTools: string;
-  acknowledgment: boolean;
+  phone: string;
+  address: string;
+  education: string;
+  experience: string;
+  skills: string;
   createdAt: string;
 }
 
@@ -39,14 +26,19 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
-    // Save to Upstash Redis
+    // Test Redis connection first
+    await redis.set('test', 'connection');
+    const test = await redis.get('test');
+    console.log('Redis test:', test);
+    
+    // Save application
     await redis.hset('applications', {
       [newApplication.id]: JSON.stringify(newApplication)
     });
     
     return newApplication;
   } catch (error) {
-    console.error('Error saving application:', error);
+    console.error('Redis error:', error);
     throw new Error('Failed to save application');
   }
 }
