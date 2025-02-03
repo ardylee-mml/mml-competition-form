@@ -6,7 +6,12 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
+    // Log environment variables (redacted for security)
+    console.log('Redis URL exists:', !!process.env.KV_REST_API_URL);
+    console.log('Redis Token exists:', !!process.env.KV_REST_API_TOKEN);
+
     const data = await request.json()
+    console.log('Received data:', data);
 
     // Check for existing email and discord ID
     const emailExists = await isEmailRegistered(data.email)
@@ -25,28 +30,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const savedApplication = await saveApplication({
-      name: data.name,
-      email: data.email,
-      discordId: data.discordId,
-      teamName: data.teamName,
-      teamMembers: data.teamMembers,
-      teamExperience: data.teamExperience,
-      previousProjects: data.previousProjects,
-      teamExperienceDescription: data.teamExperienceDescription,
-      gameGenre: data.gameGenre,
-      gameTitle: data.gameTitle,
-      gameConcept: data.gameConcept,
-      whyWin: data.whyWin,
-      whyPlayersLike: data.whyPlayersLike,
-      promotionPlan: data.promotionPlan,
-      monetizationPlan: data.monetizationPlan,
-      projectedDAU: parseInt(data.projectedDAU),
-      dayOneRetention: parseInt(data.dayOneRetention),
-      developmentTimeline: data.developmentTimeline,
-      resourcesTools: data.resourcesTools,
-      acknowledgment: data.acknowledgment
-    })
+    const savedApplication = await saveApplication(data)
+    console.log('Saved application:', savedApplication);
     
     // Send confirmation email
     await resend.emails.send({
@@ -66,11 +51,16 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    console.error('Error:', error)
+    // Log the full error
+    console.error('Detailed error:', error);
+    
     return NextResponse.json(
-      { success: false, error: 'Failed to submit application' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to submit application'
+      },
       { status: 500 }
-    )
+    );
   }
 }
 
