@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getApplications } from '@/lib/storage';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { headers } from 'next/headers';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    // Check for session token in cookie header
+    const headersList = headers();
+    const cookie = headersList.get('cookie') || '';
+    const hasSessionToken = cookie.includes('next-auth.session-token');
+    
+    if (!hasSessionToken) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
