@@ -28,10 +28,8 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
-    // Save to Redis
-    await redis.hset('applications', {
-      [newApplication.id]: JSON.stringify(newApplication)
-    });
+    // Store as stringified JSON
+    await redis.set(`applications:${newApplication.id}`, JSON.stringify(newApplication));
     
     return newApplication;
   } catch (error) {
@@ -50,9 +48,9 @@ interface PaginatedResult {
 
 export async function getApplications(page = 1, pageSize = 10): Promise<PaginatedResult> {
   try {
-    const applications = await redis.hgetall('applications');
-    const values = Object.values(applications || {})
-      .map(str => JSON.parse(str as string))
+    const applications = await redis.hgetall('applications') || {};
+    const values = Object.values(applications)
+      .map(str => typeof str === 'string' ? JSON.parse(str) : str)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     
     const total = values.length;
