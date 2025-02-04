@@ -35,6 +35,23 @@ export default function AdminPage() {
     await fetchApplications()
   }
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this application?')) return;
+    
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete application');
+      
+      // Refresh the list
+      await fetchApplications();
+    } catch (error) {
+      console.error('Error deleting application:', error);
+    }
+  };
+
   const DetailModal = ({ application }: { application: Application }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -50,8 +67,16 @@ export default function AdminPage() {
 
         <div className="space-y-6">
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Team Information</h3>
+            <h3 className="text-xl font-semibold text-cyan-400">Basic Information</h3>
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-gray-400">Name</label>
+                <p className="text-white">{application.name}</p>
+              </div>
+              <div>
+                <label className="text-gray-400">Email</label>
+                <p className="text-white">{application.email}</p>
+              </div>
               <div>
                 <label className="text-gray-400">Team Name</label>
                 <p className="text-white">{application.teamName}</p>
@@ -61,9 +86,25 @@ export default function AdminPage() {
                 <p className="text-white">{application.discordId}</p>
               </div>
             </div>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xl font-semibold text-cyan-400">Team Information</h3>
             <div>
               <label className="text-gray-400">Team Members</label>
               <p className="text-white whitespace-pre-wrap">{application.teamMembers}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Team Experience</label>
+              <p className="text-white whitespace-pre-wrap">{application.teamExperience}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Previous Projects</label>
+              <p className="text-white whitespace-pre-wrap">{application.previousProjects}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Team Experience Description</label>
+              <p className="text-white whitespace-pre-wrap">{application.teamExperienceDescription}</p>
             </div>
           </section>
 
@@ -82,6 +123,14 @@ export default function AdminPage() {
             <div>
               <label className="text-gray-400">Game Concept</label>
               <p className="text-white whitespace-pre-wrap">{application.gameConcept}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Why Should Win</label>
+              <p className="text-white whitespace-pre-wrap">{application.whyWin}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Why Players Will Like</label>
+              <p className="text-white whitespace-pre-wrap">{application.whyPlayersLike}</p>
             </div>
           </section>
 
@@ -105,21 +154,13 @@ export default function AdminPage() {
               <label className="text-gray-400">Monetization Plan</label>
               <p className="text-white whitespace-pre-wrap">{application.monetizationPlan}</p>
             </div>
-          </section>
-
-          <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Experience & Resources</h3>
-            <div>
-              <label className="text-gray-400">Team Experience</label>
-              <p className="text-white whitespace-pre-wrap">{application.teamExperience}</p>
-            </div>
-            <div>
-              <label className="text-gray-400">Previous Projects</label>
-              <p className="text-white whitespace-pre-wrap">{application.previousProjects}</p>
-            </div>
             <div>
               <label className="text-gray-400">Development Timeline</label>
               <p className="text-white whitespace-pre-wrap">{application.developmentTimeline}</p>
+            </div>
+            <div>
+              <label className="text-gray-400">Resources & Tools</label>
+              <p className="text-white whitespace-pre-wrap">{application.resourcesTools}</p>
             </div>
           </section>
         </div>
@@ -149,8 +190,8 @@ export default function AdminPage() {
           <thead>
             <tr className="bg-gray-900">
               <th className="p-2 border border-gray-700">Name</th>
+              <th className="p-2 border border-gray-700">Email</th>
               <th className="p-2 border border-gray-700">Discord ID</th>
-              <th className="p-2 border border-gray-700">Game Title</th>
               <th className="p-2 border border-gray-700">Date</th>
               <th className="p-2 border border-gray-700">Actions</th>
             </tr>
@@ -159,17 +200,23 @@ export default function AdminPage() {
             {applications.map((app) => (
               <tr key={app.id} className="hover:bg-gray-700">
                 <td className="p-2 border border-gray-700">{app.name}</td>
+                <td className="p-2 border border-gray-700">{app.email}</td>
                 <td className="p-2 border border-gray-700">{app.discordId}</td>
-                <td className="p-2 border border-gray-700">{app.gameTitle}</td>
                 <td className="p-2 border border-gray-700">
                   {new Date(app.createdAt).toLocaleDateString()}
                 </td>
-                <td className="p-2 border border-gray-700">
+                <td className="p-2 border border-gray-700 space-x-2">
                   <button
                     onClick={() => setSelectedApp(app)}
                     className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded"
                   >
                     Details
+                  </button>
+                  <button
+                    onClick={() => handleDelete(app.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>

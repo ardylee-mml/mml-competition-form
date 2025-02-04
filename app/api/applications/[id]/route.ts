@@ -11,7 +11,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deleting application:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to delete application' },
+      { error: 'Failed to delete application' },
       { status: 500 }
     )
   }
