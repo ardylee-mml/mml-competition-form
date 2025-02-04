@@ -13,21 +13,12 @@ export async function GET(request: Request) {
       );
     }
 
-    // Ensure request.url is a valid URL
-    let url;
-    try {
-      url = new URL(request.url);
-    } catch {
-      // If request.url is relative, construct full URL
-      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-      url = new URL(request.url, baseUrl);
-    }
-
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
+    // Get page and pageSize from request headers instead of URL
+    const page = 1;  // Default to first page
+    const pageSize = 10;  // Default page size
 
     const result = await getApplications(page, pageSize);
-    console.log('Applications fetched:', result); // Debug log
+    console.log('Applications fetched:', result);
     
     return NextResponse.json(result);
   } catch (error) {
