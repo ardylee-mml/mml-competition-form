@@ -1,26 +1,20 @@
 import { NextResponse } from 'next/server';
 import { getApplications } from '@/lib/storage';
-import { auth } from '../../auth';
+import { cookies } from 'next/headers';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    // Check authentication
-    const session = await auth();
-    if (!session) {
+    // Basic auth check
+    const authCookie = cookies().get('next-auth.session-token');
+    if (!authCookie) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    // Get all applications with default pagination
+    // Get applications with default pagination
     const result = await getApplications();
-    
-    // Log the request URL for debugging
-    console.log('Request URL:', request.url);
-    console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
-    console.log('VERCEL_URL:', process.env.VERCEL_URL);
-
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching applications:', error);

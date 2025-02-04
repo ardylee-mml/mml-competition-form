@@ -1,10 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Application } from '@/lib/storage'
 import { Search, Trash2, RefreshCw } from 'lucide-react'
 
 export default function AdminPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [applications, setApplications] = useState<Application[]>([])
   const [filteredApplications, setFilteredApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
@@ -14,6 +18,12 @@ export default function AdminPage() {
   const [searchField, setSearchField] = useState<'email' | 'discordId'>('email')
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/admin/login')
+    }
+  }, [status, router])
 
   const loadApplications = async () => {
     try {
@@ -301,6 +311,14 @@ export default function AdminPage() {
       </div>
     </div>
   )
+
+  if (status === 'loading') {
+    return <div>Loading...</div>
+  }
+
+  if (!session) {
+    return null
+  }
 
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>
   if (loading) return <div className="p-8">Loading...</div>
