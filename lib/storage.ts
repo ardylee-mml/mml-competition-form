@@ -28,13 +28,13 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
-    // Store as stringified JSON
-    await redis.set(`applications:${newApplication.id}`, JSON.stringify(newApplication));
+    const key = `application:${newApplication.id}`;
+    await redis.set(key, JSON.stringify(newApplication));
     
     return newApplication;
   } catch (error) {
     console.error('Storage error:', error);
-    throw new Error('Failed to save application');
+    throw error; // Pass the original error up
   }
 }
 
