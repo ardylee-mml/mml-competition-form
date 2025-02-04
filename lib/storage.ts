@@ -39,16 +39,8 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
-    // Convert any non-string values to strings before storing
-    const stringifiedData = JSON.stringify(newApplication, (key, value) => {
-      if (typeof value === 'object' && value !== null) {
-        return JSON.stringify(value)
-      }
-      return value
-    })
-    
     const key = `application:${newApplication.id}`;
-    await redis.set(key, stringifiedData);
+    await redis.set(key, JSON.stringify(newApplication));
     
     return newApplication;
   } catch (error) {
@@ -65,10 +57,9 @@ interface PaginatedResult {
   totalPages: number;
 }
 
-export async function getApplications(page = 1, pageSize = 10) {
+export async function getApplications() {
   try {
     const keys = await redis.keys('application:*');
-    
     const applications = await Promise.all(
       keys.map(async (key) => {
         try {
@@ -117,10 +108,22 @@ async function ensureFilePermissions() {
 }
 
 export async function isDiscordIdRegistered(discordId: string): Promise<boolean> {
-  const applications = await redis.hgetall('applications');
-  const values = Object.values(applications || {})
-    .map(str => JSON.parse(str as string) as Application);
-  return values.some(app => app.discordId?.toLowerCase() === discordId.toLowerCase());
+  try {
+    const keys = await redis.keys('application:*');
+    const applications = await Promise.all(
+      keys.map(async (key) => {
+        const data = await redis.get(key);
+        return typeof data === 'string' ? JSON.parse(data) : data;
+      })
+    );
+    
+    return applications.some(app => 
+      app?.discordId?.toLowerCase() === discordId.toLowerCase()
+    );
+  } catch (error) {
+    console.error('Error checking Discord ID:', error);
+    return false;
+  }
 }
 
 export async function deleteApplication(id: string): Promise<void> {
