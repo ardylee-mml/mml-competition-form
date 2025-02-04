@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { saveApplication, isEmailRegistered, isDiscordIdRegistered } from "@/lib/storage"
+import { saveApplication, isDiscordIdRegistered } from "@/lib/storage"
 import { Resend } from 'resend'
 import { Redis } from '@upstash/redis'
 
@@ -10,14 +10,24 @@ export async function POST(request: Request) {
     const formData = await request.json()
     
     const savedApplication = await saveApplication({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      address: formData.address,
-      education: formData.education,
-      experience: formData.experience,
-      skills: formData.skills,
-      discordId: formData.discordId
+      teamName: formData.teamName,
+      discordId: formData.discordId,
+      teamMembers: formData.teamMembers,
+      teamExperience: formData.teamExperience,
+      previousProjects: formData.previousProjects,
+      teamExperienceDescription: formData.teamExperienceDescription,
+      gameGenre: formData.gameGenre,
+      gameTitle: formData.gameTitle,
+      gameConcept: formData.gameConcept,
+      whyWin: formData.whyWin,
+      whyPlayersLike: formData.whyPlayersLike,
+      promotionPlan: formData.promotionPlan,
+      monetizationPlan: formData.monetizationPlan,
+      projectedDAU: Number(formData.projectedDAU),
+      dayOneRetention: Number(formData.dayOneRetention),
+      developmentTimeline: formData.developmentTimeline,
+      resourcesTools: formData.resourcesTools,
+      acknowledgment: Boolean(formData.acknowledgment)
     })
     
     // Send confirmation email

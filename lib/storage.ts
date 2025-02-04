@@ -9,15 +9,26 @@ const redis = new Redis({
 
 export interface Application {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  education: string;
-  experience: string;
-  skills: string;
+  teamName: string;
+  discordId: string;
+  teamMembers: string;
+  teamExperience: string;
+  previousProjects: string;
+  teamExperienceDescription: string;
+  gameGenre: string;
+  gameTitle: string;
+  gameConcept: string;
+  whyWin: string;
+  whyPlayersLike: string;
+  promotionPlan: string;
+  monetizationPlan: string;
+  projectedDAU: number;
+  dayOneRetention: number;
+  developmentTimeline: string;
+  resourcesTools: string;
+  acknowledgment: boolean;
   createdAt: string;
-  discordId?: string;
+  // ... other fields
 }
 
 export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'>) {
@@ -107,13 +118,6 @@ async function ensureFilePermissions() {
     console.error('Error setting file permissions:', error);
     throw new Error('Failed to set file permissions');
   }
-}
-
-export async function isEmailRegistered(email: string): Promise<boolean> {
-  const applications = await redis.hgetall('applications');
-  const values = Object.values(applications || {})
-    .map(str => JSON.parse(str as string) as Application);
-  return values.some(app => app.email.toLowerCase() === email.toLowerCase());
 }
 
 export async function isDiscordIdRegistered(discordId: string): Promise<boolean> {
