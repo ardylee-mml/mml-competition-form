@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     // Get form data
     const formData = await request.json()
-    console.log('Received form data:', formData)
+    console.log('Received form data:', JSON.stringify(formData, null, 2))
 
     // Format the data
     const applicationData = {
@@ -39,10 +39,11 @@ export async function POST(request: Request) {
       address: String(formData.address || ''),
       education: String(formData.education || ''),
       experience: String(formData.experience || ''),
-      skills: String(formData.skills || '')
+      skills: String(formData.skills || ''),
+      discordId: formData.discordId ? String(formData.discordId) : undefined
     }
 
-    console.log('Formatted application data:', applicationData)
+    console.log('Formatted data:', JSON.stringify(applicationData, null, 2))
 
     // Check for existing email and discord ID
     const emailExists = await isEmailRegistered(applicationData.email)
@@ -83,9 +84,16 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    console.error('API error:', error)
+    // Detailed error logging
+    console.error('Full error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack')
+    
     return NextResponse.json(
-      { success: false, error: 'Failed to submit application' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to submit application',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     )
   }
