@@ -39,13 +39,21 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
+    // Convert any non-string values to strings before storing
+    const stringifiedData = JSON.stringify(newApplication, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        return JSON.stringify(value)
+      }
+      return value
+    })
+    
     const key = `application:${newApplication.id}`;
-    await redis.set(key, JSON.stringify(newApplication));
+    await redis.set(key, stringifiedData);
     
     return newApplication;
   } catch (error) {
     console.error('Storage error:', error);
-    throw error; // Pass the original error up
+    throw error;
   }
 }
 
@@ -59,20 +67,13 @@ interface PaginatedResult {
 
 export async function getApplications(page = 1, pageSize = 10) {
   try {
-    // Get all keys matching our pattern
     const keys = await redis.keys('application:*');
     
-    // Get all applications
     const applications = await Promise.all(
       keys.map(async (key) => {
         try {
           const data = await redis.get(key);
-          // Check if data is already an object
-          if (typeof data === 'object' && data !== null) {
-            return data;
-          }
-          // Try to parse string data
-          return data ? JSON.parse(String(data)) : null;
+          return typeof data === 'string' ? JSON.parse(data) : data;
         } catch (err) {
           console.error('Error parsing application data for key:', key, err);
           return null;
@@ -80,12 +81,7 @@ export async function getApplications(page = 1, pageSize = 10) {
       })
     );
     
-    // Filter out nulls and sort by date
-    const values = applications
-      .filter(Boolean)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
-    return values;
+    return applications.filter(Boolean);
   } catch (error) {
     console.error('Error reading applications:', error);
     throw new Error('Failed to read applications');
