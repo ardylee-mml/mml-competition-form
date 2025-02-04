@@ -56,9 +56,14 @@ export async function getApplications(page = 1, pageSize = 10) {
       keys.map(async (key) => {
         try {
           const data = await redis.get(key);
-          return data ? JSON.parse(data.toString()) : null;
+          // Check if data is already an object
+          if (typeof data === 'object' && data !== null) {
+            return data;
+          }
+          // Try to parse string data
+          return data ? JSON.parse(String(data)) : null;
         } catch (err) {
-          console.error('Error parsing application data:', err);
+          console.error('Error parsing application data for key:', key, err);
           return null;
         }
       })
@@ -69,13 +74,7 @@ export async function getApplications(page = 1, pageSize = 10) {
       .filter(Boolean)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     
-    return {
-      data: values.slice((page - 1) * pageSize, page * pageSize),
-      total: values.length,
-      page,
-      pageSize,
-      totalPages: Math.ceil(values.length / pageSize)
-    };
+    return values;
   } catch (error) {
     console.error('Error reading applications:', error);
     throw new Error('Failed to read applications');
