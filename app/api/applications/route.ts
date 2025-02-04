@@ -13,9 +13,18 @@ export async function GET(request: Request) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const pageSize = parseInt(searchParams.get('pageSize') || '10');
+    // Ensure request.url is a valid URL
+    let url;
+    try {
+      url = new URL(request.url);
+    } catch {
+      // If request.url is relative, construct full URL
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      url = new URL(request.url, baseUrl);
+    }
+
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
 
     const result = await getApplications(page, pageSize);
     console.log('Applications fetched:', result); // Debug log
