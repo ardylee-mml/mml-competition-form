@@ -54,8 +54,13 @@ export async function getApplications(page = 1, pageSize = 10) {
     // Get all applications
     const applications = await Promise.all(
       keys.map(async (key) => {
-        const data = await redis.get(key);
-        return data ? JSON.parse(data as string) : null;
+        try {
+          const data = await redis.get(key);
+          return data ? JSON.parse(data.toString()) : null;
+        } catch (err) {
+          console.error('Error parsing application data:', err);
+          return null;
+        }
       })
     );
     
