@@ -9,6 +9,7 @@ const redis = new Redis({
 
 export interface Application {
   id: string;
+  name: string;
   teamName: string;
   discordId: string;
   teamMembers: string;

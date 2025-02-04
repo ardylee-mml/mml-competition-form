@@ -148,8 +148,9 @@ export default function AdminPage() {
         <table className="min-w-full bg-gray-800 border border-gray-700">
           <thead>
             <tr className="bg-gray-900">
-              <th className="p-2 border border-gray-700">Team Name</th>
+              <th className="p-2 border border-gray-700">Name</th>
               <th className="p-2 border border-gray-700">Discord ID</th>
+              <th className="p-2 border border-gray-700">Game Title</th>
               <th className="p-2 border border-gray-700">Date</th>
               <th className="p-2 border border-gray-700">Actions</th>
             </tr>
@@ -157,8 +158,9 @@ export default function AdminPage() {
           <tbody>
             {applications.map((app) => (
               <tr key={app.id} className="hover:bg-gray-700">
-                <td className="p-2 border border-gray-700">{app.teamName}</td>
+                <td className="p-2 border border-gray-700">{app.name}</td>
                 <td className="p-2 border border-gray-700">{app.discordId}</td>
+                <td className="p-2 border border-gray-700">{app.gameTitle}</td>
                 <td className="p-2 border border-gray-700">
                   {new Date(app.createdAt).toLocaleDateString()}
                 </td>

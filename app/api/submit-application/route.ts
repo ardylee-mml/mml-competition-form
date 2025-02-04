@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const savedApplication = await saveApplication({
-      // Basic Info
+      name: formData.teamName,
       teamName: formData.teamName,
       discordId: formData.discordId,
       
