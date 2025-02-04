@@ -7,21 +7,25 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
-    // Test Redis connection first
+    // Test Redis connection with environment variables
     const redis = new Redis({
-      url: 'https://proper-cheetah-10029.upstash.io',
-      token: 'ASctAAIjcDFlZDUzOWE4YTQ1ZmM0NWI2OWU1OTMxMTcwNDA5OTgyMnAxMA',
+      url: process.env.KV_REST_API_URL || 'https://proper-cheetah-10029.upstash.io',
+      token: process.env.KV_REST_API_TOKEN || 'ASctAAIjcDFlZDUzOWE4YTQ1ZmM0NWI2OWU1OTMxMTcwNDA5OTgyMnAxMA',
     })
 
-    // Log connection test
-    console.log('Testing Redis connection...')
-    await redis.set('test-key', 'test-value')
-    const testValue = await redis.get('test-key')
-    console.log('Redis test result:', testValue)
+    // Log connection attempt
+    console.log('Connecting to Redis...')
+    console.log('Using URL:', process.env.KV_REST_API_URL ? 'From env' : 'From fallback')
 
-    // Log environment variables (redacted for security)
-    console.log('Redis URL exists:', !!process.env.KV_REST_API_URL)
-    console.log('Redis Token exists:', !!process.env.KV_REST_API_TOKEN)
+    // Test connection
+    try {
+      await redis.set('test-connection', 'working')
+      const test = await redis.get('test-connection')
+      console.log('Redis connection test:', test)
+    } catch (redisError) {
+      console.error('Redis connection error:', redisError)
+      throw new Error('Redis connection failed')
+    }
 
     // Get form data and ensure it's properly formatted
     const formData = await request.json()
@@ -77,15 +81,12 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    // Log detailed error
-    console.error('Submission error:', error)
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-
+    console.error('Full error details:', error)
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Failed to submit application',
-        details: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : 'Unknown error',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
       },
       { status: 500 }
     )
