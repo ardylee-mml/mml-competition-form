@@ -1,34 +1,23 @@
 import { Redis } from '@upstash/redis'
 import { v4 as uuidv4 } from 'uuid'
 
+// Use the KV environment variables
 const redis = new Redis({
-  url: 'https://proper-cheetah-10029.upstash.io',
-  token: 'ASctAAIjcDFlZDUzOWE4YTQ1ZmM0NWI2OWU1OTMxMTcwNDA5OTgyMnAxMA',
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
 })
 
 export interface Application {
   id: string;
   name: string;
   email: string;
-  discordId: string;
-  teamName: string;
-  teamMembers: string;
-  teamExperience: string;
-  previousProjects: string;
-  teamExperienceDescription: string;
-  gameGenre: string;
-  gameTitle: string;
-  gameConcept: string;
-  whyWin: string;
-  whyPlayersLike: string;
-  promotionPlan: string;
-  monetizationPlan: string;
-  projectedDAU: number;
-  dayOneRetention: number;
-  developmentTimeline: string;
-  resourcesTools: string;
-  acknowledgment: boolean;
+  phone: string;
+  address: string;
+  education: string;
+  experience: string;
+  skills: string;
   createdAt: string;
+  discordId?: string;
 }
 
 export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'>) {
@@ -39,19 +28,14 @@ export async function saveApplication(data: Omit<Application, 'id' | 'createdAt'
       createdAt: new Date().toISOString()
     };
     
-    // Test Redis connection first
-    await redis.set('test', 'connection');
-    const test = await redis.get('test');
-    console.log('Redis test:', test);
-    
-    // Save application
+    // Save to Redis
     await redis.hset('applications', {
       [newApplication.id]: JSON.stringify(newApplication)
     });
     
     return newApplication;
   } catch (error) {
-    console.error('Redis error:', error);
+    console.error('Storage error:', error);
     throw new Error('Failed to save application');
   }
 }
@@ -128,7 +112,7 @@ export async function isDiscordIdRegistered(discordId: string): Promise<boolean>
   const applications = await redis.hgetall('applications');
   const values = Object.values(applications || {})
     .map(str => JSON.parse(str as string) as Application);
-  return values.some(app => app.discordId.toLowerCase() === discordId.toLowerCase());
+  return values.some(app => app.discordId?.toLowerCase() === discordId.toLowerCase());
 }
 
 export async function deleteApplication(id: string): Promise<void> {

@@ -29,29 +29,17 @@ export async function POST(request: Request) {
 
     // Get form data
     const formData = await request.json()
-    
-    // Format the data properly
+    console.log('Received form data:', formData)
+
+    // Format the data
     const applicationData = {
       name: String(formData.name || ''),
       email: String(formData.email || ''),
-      discordId: String(formData.discordId || ''),
-      teamName: String(formData.teamName || ''),
-      teamMembers: String(formData.teamMembers || ''),
-      teamExperience: String(formData.teamExperience || ''),
-      previousProjects: String(formData.previousProjects || ''),
-      teamExperienceDescription: String(formData.teamExperienceDescription || ''),
-      gameGenre: String(formData.gameGenre || ''),
-      gameTitle: String(formData.gameTitle || ''),
-      gameConcept: String(formData.gameConcept || ''),
-      whyWin: String(formData.whyWin || ''),
-      whyPlayersLike: String(formData.whyPlayersLike || ''),
-      promotionPlan: String(formData.promotionPlan || ''),
-      monetizationPlan: String(formData.monetizationPlan || ''),
-      projectedDAU: Number(formData.projectedDAU || 0),
-      dayOneRetention: Number(formData.dayOneRetention || 0),
-      developmentTimeline: String(formData.developmentTimeline || ''),
-      resourcesTools: String(formData.resourcesTools || ''),
-      acknowledgment: Boolean(formData.acknowledgment)
+      phone: String(formData.phone || ''),
+      address: String(formData.address || ''),
+      education: String(formData.education || ''),
+      experience: String(formData.experience || ''),
+      skills: String(formData.skills || '')
     }
 
     console.log('Formatted application data:', applicationData)
@@ -95,12 +83,9 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    console.error('Submission error:', error)
+    console.error('API error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to submit application'
-      },
+      { success: false, error: 'Failed to submit application' },
       { status: 500 }
     )
   }
