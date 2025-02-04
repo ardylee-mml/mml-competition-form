@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getApplications } from '@/lib/storage';
 import { auth } from '../../auth';
-import { headers } from 'next/headers';
 
 export async function GET(request: Request) {
   try {
@@ -14,18 +13,14 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get host from headers
-    const headersList = headers();
-    const host = headersList.get('host') || '';
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const baseUrl = `${protocol}://${host}`;
+    // Get all applications with default pagination
+    const result = await getApplications();
+    
+    // Log the request URL for debugging
+    console.log('Request URL:', request.url);
+    console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+    console.log('VERCEL_URL:', process.env.VERCEL_URL);
 
-    // Parse URL with base URL
-    const url = new URL(request.url, baseUrl);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
-
-    const result = await getApplications(page, pageSize);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching applications:', error);
