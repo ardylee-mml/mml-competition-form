@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     await resend.emails.send({
       from: 'MML Competition <noreply@metamindinglab.com>',
       to: formData.email,
-      subject: 'Application Received',
+      subject: 'MML Roblox Game and Development Competition Application Received',
       html: `<p>Dear ${formData.teamName},</p>
              <p>We have received your game competition application.</p>
              <p>Application ID: ${savedApplication.id}</p>`
