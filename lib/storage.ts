@@ -46,24 +46,30 @@ interface PaginatedResult {
   totalPages: number;
 }
 
-export async function getApplications(page = 1, pageSize = 10): Promise<PaginatedResult> {
+export async function getApplications(page = 1, pageSize = 10) {
   try {
-    const applications = await redis.hgetall('applications') || {};
-    const values = Object.values(applications)
-      .map(str => typeof str === 'string' ? JSON.parse(str) : str)
+    // Get all keys matching our pattern
+    const keys = await redis.keys('application:*');
+    
+    // Get all applications
+    const applications = await Promise.all(
+      keys.map(async (key) => {
+        const data = await redis.get(key);
+        return data ? JSON.parse(data as string) : null;
+      })
+    );
+    
+    // Filter out nulls and sort by date
+    const values = applications
+      .filter(Boolean)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     
-    const total = values.length;
-    const totalPages = Math.ceil(total / pageSize);
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
-    
     return {
-      data: values.slice(start, end),
-      total,
+      data: values.slice((page - 1) * pageSize, page * pageSize),
+      total: values.length,
       page,
       pageSize,
-      totalPages
+      totalPages: Math.ceil(values.length / pageSize)
     };
   } catch (error) {
     console.error('Error reading applications:', error);

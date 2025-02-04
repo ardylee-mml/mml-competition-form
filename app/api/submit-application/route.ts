@@ -20,6 +20,16 @@ export async function POST(request: Request) {
       discordId: formData.discordId
     })
     
+    // Send confirmation email
+    await resend.emails.send({
+      from: 'MML Competition <noreply@metamindinglab.com>',
+      to: formData.email,
+      subject: 'Application Received',
+      html: `<p>Dear ${formData.name},</p>
+             <p>We have received your application.</p>
+             <p>Application ID: ${savedApplication.id}</p>`
+    })
+    
     return NextResponse.json({ success: true, id: savedApplication.id })
   } catch (error) {
     console.error('API error:', error)
