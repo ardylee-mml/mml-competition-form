@@ -1,19 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getApplications } from '@/lib/storage';
-import { cookies } from 'next/headers';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET() {
   try {
-    // Basic auth check
-    const authCookie = cookies().get('next-auth.session-token');
-    if (!authCookie) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    // Get applications with default pagination
     const result = await getApplications();
     return NextResponse.json(result);
   } catch (error) {
