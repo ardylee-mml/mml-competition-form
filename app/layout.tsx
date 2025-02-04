@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'MML Competition Form',
   description: 'MML Roblox Game Competition Application Form',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
