@@ -34,11 +34,24 @@ export async function POST(request: Request) {
     const applicationData = {
       name: String(formData.name || ''),
       email: String(formData.email || ''),
-      phone: String(formData.phone || ''),
-      address: String(formData.address || ''),
-      education: String(formData.education || ''),
-      experience: String(formData.experience || ''),
-      skills: String(formData.skills || '')
+      discordId: String(formData.discordId || ''),
+      teamName: String(formData.teamName || ''),
+      teamMembers: String(formData.teamMembers || ''),
+      teamExperience: String(formData.teamExperience || ''),
+      previousProjects: String(formData.previousProjects || ''),
+      teamExperienceDescription: String(formData.teamExperienceDescription || ''),
+      gameGenre: String(formData.gameGenre || ''),
+      gameTitle: String(formData.gameTitle || ''),
+      gameConcept: String(formData.gameConcept || ''),
+      whyWin: String(formData.whyWin || ''),
+      whyPlayersLike: String(formData.whyPlayersLike || ''),
+      promotionPlan: String(formData.promotionPlan || ''),
+      monetizationPlan: String(formData.monetizationPlan || ''),
+      projectedDAU: Number(formData.projectedDAU || 0),
+      dayOneRetention: Number(formData.dayOneRetention || 0),
+      developmentTimeline: String(formData.developmentTimeline || ''),
+      resourcesTools: String(formData.resourcesTools || ''),
+      acknowledgment: Boolean(formData.acknowledgment)
     }
 
     console.log('Formatted application data:', applicationData)
