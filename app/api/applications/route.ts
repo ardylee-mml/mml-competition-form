@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getApplications } from '@/lib/storage';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '../../auth';
 
 export async function GET(request: Request) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session) {
       return NextResponse.json(
         { error: 'Authentication required' },
