@@ -130,7 +130,8 @@ export async function isDiscordIdRegistered(discordId: string): Promise<boolean>
 
 export async function deleteApplication(id: string): Promise<void> {
   try {
-    await redis.hdel('applications', id);
+    const key = `application:${id}`;
+    await redis.del(key);
   } catch (error) {
     console.error('Error deleting application:', error);
     throw new Error('Failed to delete application');
