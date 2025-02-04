@@ -23,11 +23,23 @@ export async function POST(request: Request) {
     console.log('Redis URL exists:', !!process.env.KV_REST_API_URL)
     console.log('Redis Token exists:', !!process.env.KV_REST_API_TOKEN)
 
-    const data = await request.json()
-    console.log('Received data:', data)
+    // Get form data and ensure it's properly formatted
+    const formData = await request.json()
+    console.log('Raw form data:', formData)
+
+    // Format the data for storage
+    const applicationData = {
+      name: String(formData.name || ''),
+      email: String(formData.email || ''),
+      phone: String(formData.phone || ''),
+      address: String(formData.address || ''),
+      education: String(formData.education || ''),
+      experience: String(formData.experience || ''),
+      skills: String(formData.skills || '')
+    }
 
     // Check for existing email and discord ID
-    const emailExists = await isEmailRegistered(data.email)
+    const emailExists = await isEmailRegistered(applicationData.email)
     if (emailExists) {
       return NextResponse.json(
         { success: false, error: 'email_exists' },
@@ -35,7 +47,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const discordExists = await isDiscordIdRegistered(data.discordId)
+    const discordExists = await isDiscordIdRegistered(formData.discordId)
     if (discordExists) {
       return NextResponse.json(
         { success: false, error: 'discord_exists' },
@@ -43,13 +55,14 @@ export async function POST(request: Request) {
       )
     }
 
-    const savedApplication = await saveApplication(data)
-    console.log('Saved application:', savedApplication)
+    // Save application
+    const savedApplication = await saveApplication(applicationData)
+    console.log('Application saved:', savedApplication)
     
     // Send confirmation email
     await resend.emails.send({
       from: 'info@metamindinglab.com',
-      to: data.email,
+      to: applicationData.email,
       subject: 'MML Competition Application Confirmation',
       html: `
         <h1>Application Received</h1>
@@ -71,8 +84,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Failed to submit application',
-        details: error instanceof Error ? error.stack : undefined
+        error: 'Failed to submit application',
+        details: error instanceof Error ? error.message : String(error)
       },
       { status: 500 }
     )
