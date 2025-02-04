@@ -27,11 +27,10 @@ export async function POST(request: Request) {
       throw new Error('Redis connection failed')
     }
 
-    // Get form data and ensure it's properly formatted
+    // Get form data
     const formData = await request.json()
-    console.log('Raw form data:', formData)
-
-    // Format the data for storage
+    
+    // Format the data properly
     const applicationData = {
       name: String(formData.name || ''),
       email: String(formData.email || ''),
@@ -41,6 +40,8 @@ export async function POST(request: Request) {
       experience: String(formData.experience || ''),
       skills: String(formData.skills || '')
     }
+
+    console.log('Formatted application data:', applicationData)
 
     // Check for existing email and discord ID
     const emailExists = await isEmailRegistered(applicationData.email)
@@ -59,9 +60,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Save application
+    // Save using the existing Redis connection in storage.ts
     const savedApplication = await saveApplication(applicationData)
-    console.log('Application saved:', savedApplication)
+    console.log('Saved application:', savedApplication)
     
     // Send confirmation email
     await resend.emails.send({
@@ -81,12 +82,11 @@ export async function POST(request: Request) {
       applicationId: savedApplication.id 
     })
   } catch (error) {
-    console.error('Full error details:', error)
+    console.error('Submission error:', error)
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+        error: error instanceof Error ? error.message : 'Failed to submit application'
       },
       { status: 500 }
     )
