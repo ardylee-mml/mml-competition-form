@@ -27,7 +27,6 @@ const formSchema = z.object({
   teamExperience: z.string()
     .min(10, "Please provide more details about team experience")
     .max(500, "Team experience description is too long"),
-  gameGenre: z.string().min(1, "Please select a game genre"),
   gameTitle: z.string().min(2, "Game title must be at least 2 characters"),
   gameConcept: z.string()
     .min(50, "Please provide more details about your game concept")
@@ -145,7 +144,6 @@ export default function ApplicationForm() {
         return ['previousProjects', 'teamExperienceDescription']
       case 3:
         return [
-          'gameGenre',
           'gameTitle',
           'gameConcept',
           'whyWin',
@@ -250,32 +248,6 @@ export default function ApplicationForm() {
         return (
           <Card className="bg-gray-800 p-6">
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="block text-gray-300">Game Genre</Label>
-                <RadioGroup className="flex space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="Low-poly"
-                      id="genre1"
-                      {...register("gameGenre", { required: "Game Genre is required" })}
-                    />
-                    <Label htmlFor="genre1" className="cursor-pointer text-gray-300">
-                      Low-poly
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="Hi-poly"
-                      id="genre2"
-                      {...register("gameGenre", { required: "Game Genre is required" })}
-                    />
-                    <Label htmlFor="genre2" className="cursor-pointer text-gray-300">
-                      Hi-poly
-                    </Label>
-                  </div>
-                </RadioGroup>
-                {errors.gameGenre && <p className="text-xs text-red-400">{errors.gameGenre.message}</p>}
-              </div>
               {renderInput("gameTitle", "Game Title", <Gamepad className="h-4 w-4" />)}
               {renderTextarea(
                 "gameConcept", 

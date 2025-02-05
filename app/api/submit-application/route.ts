@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { saveApplication, isDiscordIdRegistered } from "@/lib/storage"
+import { saveApplication, isDiscordIdRegistered, isEmailRegistered } from "@/lib/storage"
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -8,6 +8,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.json()
     
+    // Check if Email is already registered
+    if (await isEmailRegistered(formData.email)) {
+      return NextResponse.json(
+        { success: false, error: 'email_exists' },
+        { status: 400 }
+      )
+    }
+
     // Check if Discord ID is already registered
     if (await isDiscordIdRegistered(formData.discordId)) {
       return NextResponse.json(

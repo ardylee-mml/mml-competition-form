@@ -136,4 +136,23 @@ export async function deleteApplication(id: string): Promise<void> {
     console.error('Error deleting application:', error);
     throw new Error('Failed to delete application');
   }
+}
+
+export async function isEmailRegistered(email: string): Promise<boolean> {
+  try {
+    const keys = await redis.keys('application:*');
+    const applications = await Promise.all(
+      keys.map(async (key) => {
+        const data = await redis.get(key);
+        return typeof data === 'string' ? JSON.parse(data) : data;
+      })
+    );
+    
+    return applications.some(app => 
+      app?.email?.toLowerCase() === email.toLowerCase()
+    );
+  } catch (error) {
+    console.error('Error checking email:', error);
+    return false;
+  }
 } 
