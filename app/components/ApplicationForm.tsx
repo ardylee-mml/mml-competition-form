@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 // Define validation schema using Zod
 const formSchema = z.object({
@@ -342,76 +343,94 @@ export default function ApplicationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="mb-8">
-        <div className="flex flex-wrap gap-1 mb-4 bg-gray-800 p-1 rounded-lg">
-          {formSections.map((section, index) => (
-            <Button
-              key={index}
-              variant={currentStep === index ? "default" : "outline"}
-              className={`flex-1 min-w-[150px] ${
-                currentStep === index 
-                  ? "bg-cyan-600 text-white" 
-                  : "bg-gray-900 text-gray-300 hover:bg-gray-700"
-              }`}
-              onClick={() => setCurrentStep(index)}
-            >
-              <div className="flex items-center justify-center gap-2">
-                {section.icon}
-                <span className="inline">{section.title}</span>
-              </div>
-            </Button>
-          ))}
-        </div>
-        <div className="h-2 bg-gray-700 rounded-full">
-          <div
-            className="h-full bg-cyan-400 rounded-full transition-all duration-300 ease-in-out"
-            style={{ width: `${((currentStep + 1) / formSections.length) * 100}%` }}
-          ></div>
-        </div>
+    <>
+      <div className="text-center mb-8">
+        <Image
+          src="/images/metaminding-logo.png"
+          alt="MetaMinding Lab"
+          width={300}
+          height={150}
+          className="mx-auto mb-4"
+        />
+        <h1 className="text-3xl font-bold text-cyan-400 mb-2">
+          MML Game Design and Development Competition
+        </h1>
+        <p className="text-gray-300 text-lg">
+          Showcase your game development skills and compete for 30000 Robux!
+        </p>
       </div>
 
-      {formSections.map((_, index) => (
-        <div key={index} className={currentStep === index ? "" : "hidden"}>
-          {renderFormSection(index)}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-1 mb-4 bg-gray-800 p-1 rounded-lg">
+            {formSections.map((section, index) => (
+              <Button
+                key={index}
+                variant={currentStep === index ? "default" : "outline"}
+                className={`flex-1 min-w-[150px] ${
+                  currentStep === index 
+                    ? "bg-cyan-600 text-white" 
+                    : "bg-gray-900 text-gray-300 hover:bg-gray-700"
+                }`}
+                onClick={() => setCurrentStep(index)}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  {section.icon}
+                  <span className="inline">{section.title}</span>
+                </div>
+              </Button>
+            ))}
+          </div>
+          <div className="h-2 bg-gray-700 rounded-full">
+            <div
+              className="h-full bg-cyan-400 rounded-full transition-all duration-300 ease-in-out"
+              style={{ width: `${((currentStep + 1) / formSections.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
-      ))}
 
-      <div className="flex justify-between mt-8">
-        <Button
-          type="button"
-          onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-          disabled={currentStep === 0 || isSubmitting}
-          className="bg-gray-700 hover:bg-gray-800 text-white"
-        >
-          Previous
-        </Button>
-        {currentStep < formSections.length - 1 ? (
+        {formSections.map((_, index) => (
+          <div key={index} className={currentStep === index ? "" : "hidden"}>
+            {renderFormSection(index)}
+          </div>
+        ))}
+
+        <div className="flex justify-between mt-8">
           <Button
             type="button"
-            onClick={handleNext}
-            disabled={isSubmitting}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+            disabled={currentStep === 0 || isSubmitting}
+            className="bg-gray-700 hover:bg-gray-800 text-white"
           >
-            Next
+            Previous
           </Button>
-        ) : (
-          <Button 
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            {isSubmitting ? "Submitting..." : "Submit Application"}
-          </Button>
-        )}
-      </div>
+          {currentStep < formSections.length - 1 ? (
+            <Button
+              type="button"
+              onClick={handleNext}
+              disabled={isSubmitting}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
+              Next
+            </Button>
+          ) : (
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </Button>
+          )}
+        </div>
 
-      {submitStatus && (
-        <p className={`mt-4 text-center ${submitStatus.includes("Error") ? "text-red-400" : "text-green-400"}`}>
-          {submitStatus}
-        </p>
-      )}
-    </form>
+        {submitStatus && (
+          <p className={`mt-4 text-center ${submitStatus.includes("Error") ? "text-red-400" : "text-green-400"}`}>
+            {submitStatus}
+          </p>
+        )}
+      </form>
+    </>
   )
 }
 
