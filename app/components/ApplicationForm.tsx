@@ -372,12 +372,12 @@ export default function ApplicationForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4 bg-gray-800 p-1 rounded-lg">
+        <div className="flex flex-wrap gap-1 mb-4 bg-gray-800 p-1 rounded-lg">
           {formSections.map((section, index) => (
             <Button
               key={index}
               variant={currentStep === index ? "default" : "outline"}
-              className={`flex-1 mx-1 ${
+              className={`flex-1 min-w-[150px] ${
                 currentStep === index 
                   ? "bg-cyan-600 text-white" 
                   : "bg-gray-900 text-gray-300 hover:bg-gray-700"
@@ -386,7 +386,7 @@ export default function ApplicationForm() {
             >
               <div className="flex items-center justify-center gap-2">
                 {section.icon}
-                <span className="hidden sm:inline">{section.title}</span>
+                <span className="inline">{section.title}</span>
               </div>
             </Button>
           ))}
