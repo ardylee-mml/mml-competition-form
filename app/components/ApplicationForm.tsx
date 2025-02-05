@@ -162,7 +162,13 @@ export default function ApplicationForm() {
     }
   }
 
-  const renderInput = (name: keyof FormData, label: string, icon: React.ReactNode, type = "text") => (
+  const renderInput = (
+    name: keyof FormData, 
+    label: string, 
+    icon: React.ReactNode, 
+    type = "text",
+    placeholder?: string
+  ) => (
     <div className="space-y-2">
       <Label className="flex items-center gap-2 text-gray-300">
         {icon}
@@ -174,6 +180,7 @@ export default function ApplicationForm() {
           valueAsNumber: type === "number"
         })}
         type={type}
+        placeholder={placeholder}
         className={`${errors[name] ? "border-red-500" : ""} bg-gray-900 text-gray-100 focus:bg-gray-950`}
       />
       {errors[name] && (
@@ -182,7 +189,12 @@ export default function ApplicationForm() {
     </div>
   )
 
-  const renderTextarea = (name: keyof FormData, label: string, maxLength?: number) => (
+  const renderTextarea = (
+    name: keyof FormData, 
+    label: string, 
+    maxLength?: number,
+    placeholder?: string
+  ) => (
     <div className="space-y-2">
       <Label className="block text-gray-300">
         {label}
@@ -190,6 +202,7 @@ export default function ApplicationForm() {
       </Label>
       <Textarea
         {...register(name)}
+        placeholder={placeholder}
         className={`${errors[name] ? "border-red-500" : ""} bg-gray-900 text-gray-100 focus:bg-gray-950 min-h-[100px]`}
       />
       {errors[name] && (
@@ -242,35 +255,72 @@ export default function ApplicationForm() {
                 <RadioGroup className="flex space-x-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem
-                      value="Genre 1"
+                      value="Low-poly"
                       id="genre1"
                       {...register("gameGenre", { required: "Game Genre is required" })}
                     />
                     <Label htmlFor="genre1" className="cursor-pointer text-gray-300">
-                      Genre 1
+                      Low-poly
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem
-                      value="Genre 2"
+                      value="Hi-poly"
                       id="genre2"
                       {...register("gameGenre", { required: "Game Genre is required" })}
                     />
                     <Label htmlFor="genre2" className="cursor-pointer text-gray-300">
-                      Genre 2
+                      Hi-poly
                     </Label>
                   </div>
                 </RadioGroup>
                 {errors.gameGenre && <p className="text-xs text-red-400">{errors.gameGenre.message}</p>}
               </div>
               {renderInput("gameTitle", "Game Title", <Gamepad className="h-4 w-4" />)}
-              {renderTextarea("gameConcept", "Game Concept Description (Max 300 words)", 300)}
-              {renderTextarea("whyWin", "Why should your game win? (Max 200 words)", 200)}
-              {renderTextarea("whyPlayersLike", "Why will game players like your game? (Max 200 words)", 200)}
-              {renderTextarea("promotionPlan", "How are you planning to promote your game? (Max 200 words)", 200)}
-              {renderTextarea("monetizationPlan", "How are you monetizing your game? (Max 200 words)", 200)}
-              {renderInput("projectedDAU", "Projected Daily Active Users (DAU) in 3 months time", null, "number")}
-              {renderInput("dayOneRetention", "Projected Day 1 Retention Rate (%) in 3 months time", null, "number")}
+              {renderTextarea(
+                "gameConcept", 
+                "Game Concept Description (Max 300 words)", 
+                300,
+                "Example: A multiplayer survival game where players must work together to build and defend their base..."
+              )}
+              {renderTextarea(
+                "whyWin", 
+                "Why should your game win? (Max 200 words)", 
+                200,
+                "Example: Our game introduces innovative mechanics such as..."
+              )}
+              {renderTextarea(
+                "whyPlayersLike", 
+                "Why will game players like your game? (Max 200 words)", 
+                200,
+                "Example: Players will enjoy the unique combination of..."
+              )}
+              {renderTextarea(
+                "promotionPlan", 
+                "How are you planning to promote your game? (Max 200 words)", 
+                200,
+                "Example: We plan to collaborate with Roblox influencers and..."
+              )}
+              {renderTextarea(
+                "monetizationPlan", 
+                "How are you monetizing your game? (Max 200 words)", 
+                200,
+                "Example: Our monetization strategy includes cosmetic items and..."
+              )}
+              {renderInput(
+                "projectedDAU", 
+                "Projected Daily Active Users (DAU) in 3 months time", 
+                null, 
+                "number",
+                "Example: 5000"
+              )}
+              {renderInput(
+                "dayOneRetention", 
+                "Projected Day 1 Retention Rate (%) in 3 months time", 
+                null, 
+                "number",
+                "Example: 40"
+              )}
             </CardContent>
           </Card>
         )

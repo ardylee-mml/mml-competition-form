@@ -56,8 +56,12 @@ export async function POST(request: Request) {
       to: formData.email,
       subject: 'MML Roblox Game and Development Competition Application Received',
       html: `<p>Dear ${formData.teamName},</p>
-             <p>We have received your game competition application.</p>
-             <p>Application ID: ${savedApplication.id}</p>`
+             <p>Thank you for your application! We have received your MML Game Design and Development Competition application.</p>
+             <p>Application ID: ${savedApplication.id}</p>
+             <p>We will review your application and get back to you soon. </p>
+             <p>  </p>
+             <p>Best regards,</p>
+             <p>MML Competition Team</p>`
     })
     
     return NextResponse.json({ success: true, id: savedApplication.id })
