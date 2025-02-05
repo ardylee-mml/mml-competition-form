@@ -352,12 +352,6 @@ export default function ApplicationForm() {
           height={150}
           className="mx-auto mb-4"
         />
-        <h1 className="text-3xl font-bold text-cyan-400 mb-2">
-          MML Game Design and Development Competition
-        </h1>
-        <p className="text-gray-300 text-lg">
-          Showcase your game development skills and compete for 30000 Robux!
-        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
