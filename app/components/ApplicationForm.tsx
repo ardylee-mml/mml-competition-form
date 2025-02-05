@@ -328,8 +328,18 @@ export default function ApplicationForm() {
         return (
           <Card className="bg-gray-800 p-6">
             <CardContent className="space-y-4">
-              {renderTextarea("developmentTimeline", "Timeline for Game Development (Max 200 words)", 200)}
-              {renderTextarea("resourcesTools", "Resources and Tools Required (Max 200 words)", 200)}
+              {renderTextarea(
+                "developmentTimeline", 
+                "Timeline for Game Development (Max 200 words)", 
+                200,
+                "Example: Month 1: Core mechanics and basic gameplay\nMonth 2: Asset creation and level design\nMonth 3: Testing and optimization..."
+              )}
+              {renderTextarea(
+                "resourcesTools", 
+                "Resources and Tools Required (Max 200 words)", 
+                200,
+                "Example: Development tools: Roblox Studio, Blender\nTeam resources: 2 developers, 1 artist\nHardware requirements..."
+              )}
               
               <div className="space-y-2 pt-4 border-t border-gray-700">
                 <div className="flex items-center space-x-2">
@@ -362,16 +372,22 @@ export default function ApplicationForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 bg-gray-800 p-1 rounded-lg">
           {formSections.map((section, index) => (
             <Button
               key={index}
               variant={currentStep === index ? "default" : "outline"}
-              className={`flex-1 ${currentStep === index ? "bg-cyan-600 text-white" : "bg-gray-800 text-gray-300"}`}
+              className={`flex-1 mx-1 ${
+                currentStep === index 
+                  ? "bg-cyan-600 text-white" 
+                  : "bg-gray-900 text-gray-300 hover:bg-gray-700"
+              }`}
               onClick={() => setCurrentStep(index)}
             >
-              {section.icon}
-              <span className="ml-2 hidden sm:inline">{section.title}</span>
+              <div className="flex items-center justify-center gap-2">
+                {section.icon}
+                <span className="hidden sm:inline">{section.title}</span>
+              </div>
             </Button>
           ))}
         </div>
