@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       from: 'MML Competition <noreply@metamindinglab.com>',
       to: formData.email,
       subject: 'MML Roblox Game and Development Competition Application Received',
-      html: `<p>Dear ${formData.teamName},</p>
+      html: `<p>Dear ${formData.name},</p>
              <p>Thank you for your application! We have received your MML Game Design and Development Competition application.</p>
              <p>Application ID: ${savedApplication.id}</p>
              <p>We will review your application and get back to you soon. </p>
