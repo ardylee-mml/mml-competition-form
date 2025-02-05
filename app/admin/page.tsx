@@ -2,21 +2,29 @@
 
 import { useState, useEffect } from 'react'
 import { Application } from '@/lib/storage'
-import { RefreshCw, X } from 'lucide-react'
+import { RefreshCw, X, Search } from 'lucide-react'
+import { Input } from "@/components/ui/input"
 
 export default function AdminPage() {
   const [applications, setApplications] = useState<Application[]>([])
+  const [filteredApplications, setFilteredApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedApp, setSelectedApp] = useState<Application | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const fetchApplications = async () => {
     try {
       const response = await fetch('/api/applications')
       if (!response.ok) throw new Error('Failed to fetch applications')
       const data = await response.json()
-      setApplications(data.data || [])
+      // Sort applications by date (newest first)
+      const sortedApps = data.data.sort((a: Application, b: Application) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      setApplications(sortedApps)
+      setFilteredApplications(sortedApps)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading applications')
       console.error('Fetch error:', err)
@@ -29,6 +37,14 @@ export default function AdminPage() {
   useEffect(() => {
     fetchApplications()
   }, [])
+
+  useEffect(() => {
+    const filtered = applications.filter(app => 
+      app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.discordId.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    setFilteredApplications(filtered)
+  }, [searchTerm, applications])
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
@@ -174,15 +190,27 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto p-4 text-white">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Applications ({applications.length})</h1>
-        <button 
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <h1 className="text-2xl font-bold">Applications ({filteredApplications.length})</h1>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search by email or Discord ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-gray-800 border-gray-700 text-white w-64"
+            />
+          </div>
+          <button 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -197,7 +225,7 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {applications.map((app) => (
+            {filteredApplications.map((app) => (
               <tr key={app.id} className="hover:bg-gray-700">
                 <td className="p-2 border border-gray-700">{app.name}</td>
                 <td className="p-2 border border-gray-700">{app.email}</td>
