@@ -326,7 +326,8 @@ export default function ApplicationForm() {
                     htmlFor="acknowledgment" 
                     className="text-sm text-gray-300 cursor-pointer"
                   >
-                    I acknowledge that all information provided is accurate and I agree to the competition rules and terms.
+                    I acknowledge that all information provided is accurate and I agree to the competition rules and terms. 
+                    I understand that the MML Competition Team may contact me for clarification about my game submission.
                     <span className="text-red-400 ml-1">*</span>
                   </Label>
                 </div>
