@@ -1,70 +1,76 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Application } from '@/lib/storage'
-import { RefreshCw, X, Search } from 'lucide-react'
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
+import { Application } from "@/lib/storage";
+import { RefreshCw, X, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function AdminPage() {
-  const [applications, setApplications] = useState<Application[]>([])
-  const [filteredApplications, setFilteredApplications] = useState<Application[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [selectedApp, setSelectedApp] = useState<Application | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [filteredApplications, setFilteredApplications] = useState<
+    Application[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchApplications = async () => {
     try {
-      const response = await fetch('/api/applications')
-      if (!response.ok) throw new Error('Failed to fetch applications')
-      const data = await response.json()
+      const response = await fetch("/api/applications");
+      if (!response.ok) throw new Error("Failed to fetch applications");
+      const data = await response.json();
       // Sort applications by date (newest first)
-      const sortedApps = data.data.sort((a: Application, b: Application) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      setApplications(sortedApps)
-      setFilteredApplications(sortedApps)
+      const sortedApps = data.data.sort(
+        (a: Application, b: Application) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setApplications(sortedApps);
+      setFilteredApplications(sortedApps);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading applications')
-      console.error('Fetch error:', err)
+      setError(
+        err instanceof Error ? err.message : "Error loading applications"
+      );
+      console.error("Fetch error:", err);
     } finally {
-      setLoading(false)
-      setIsRefreshing(false)
+      setLoading(false);
+      setIsRefreshing(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchApplications()
-  }, [])
+    fetchApplications();
+  }, []);
 
   useEffect(() => {
-    const filtered = applications.filter(app => 
-      app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.discordId.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    setFilteredApplications(filtered)
-  }, [searchTerm, applications])
+    const filtered = applications.filter(
+      (app) =>
+        app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.discordId.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredApplications(filtered);
+  }, [searchTerm, applications]);
 
   const handleRefresh = async () => {
-    setIsRefreshing(true)
-    await fetchApplications()
-  }
+    setIsRefreshing(true);
+    await fetchApplications();
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this application?')) return;
-    
+    if (!confirm("Are you sure you want to delete this application?")) return;
+
     try {
       const response = await fetch(`/api/applications/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       });
-      
-      if (!response.ok) throw new Error('Failed to delete application');
-      
+
+      if (!response.ok) throw new Error("Failed to delete application");
+
       // Refresh the list
       await fetchApplications();
     } catch (error) {
-      console.error('Error deleting application:', error);
+      console.error("Error deleting application:", error);
     }
   };
 
@@ -73,7 +79,7 @@ export default function AdminPage() {
       <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Application Details</h2>
-          <button 
+          <button
             onClick={() => setSelectedApp(null)}
             className="text-gray-400 hover:text-white"
           >
@@ -83,7 +89,9 @@ export default function AdminPage() {
 
         <div className="space-y-6">
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Basic Information</h3>
+            <h3 className="text-xl font-semibold text-cyan-400">
+              Basic Information
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-gray-400">Name</label>
@@ -105,27 +113,41 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Team Information</h3>
+            <h3 className="text-xl font-semibold text-cyan-400">
+              Team Information
+            </h3>
             <div>
               <label className="text-gray-400">Team Members</label>
-              <p className="text-white whitespace-pre-wrap">{application.teamMembers}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.teamMembers}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Team Experience</label>
-              <p className="text-white whitespace-pre-wrap">{application.teamExperience}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.teamExperience}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Previous Projects</label>
-              <p className="text-white whitespace-pre-wrap">{application.previousProjects}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.previousProjects}
+              </p>
             </div>
             <div>
-              <label className="text-gray-400">Team Experience Description</label>
-              <p className="text-white whitespace-pre-wrap">{application.teamExperienceDescription}</p>
+              <label className="text-gray-400">
+                Team Experience In Game Launch
+              </label>
+              <p className="text-white whitespace-pre-wrap">
+                {application.teamExperienceDescription}
+              </p>
             </div>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Game Details</h3>
+            <h3 className="text-xl font-semibold text-cyan-400">
+              Game Details
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-gray-400">Game Title</label>
@@ -138,20 +160,28 @@ export default function AdminPage() {
             </div>
             <div>
               <label className="text-gray-400">Game Concept</label>
-              <p className="text-white whitespace-pre-wrap">{application.gameConcept}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.gameConcept}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Why Should Win</label>
-              <p className="text-white whitespace-pre-wrap">{application.whyWin}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.whyWin}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Why Players Will Like</label>
-              <p className="text-white whitespace-pre-wrap">{application.whyPlayersLike}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.whyPlayersLike}
+              </p>
             </div>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold text-cyan-400">Business & Development</h3>
+            <h3 className="text-xl font-semibold text-cyan-400">
+              Business & Development
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-gray-400">Projected DAU</label>
@@ -164,33 +194,43 @@ export default function AdminPage() {
             </div>
             <div>
               <label className="text-gray-400">Promotion Plan</label>
-              <p className="text-white whitespace-pre-wrap">{application.promotionPlan}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.promotionPlan}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Monetization Plan</label>
-              <p className="text-white whitespace-pre-wrap">{application.monetizationPlan}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.monetizationPlan}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Development Timeline</label>
-              <p className="text-white whitespace-pre-wrap">{application.developmentTimeline}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.developmentTimeline}
+              </p>
             </div>
             <div>
               <label className="text-gray-400">Resources & Tools</label>
-              <p className="text-white whitespace-pre-wrap">{application.resourcesTools}</p>
+              <p className="text-white whitespace-pre-wrap">
+                {application.resourcesTools}
+              </p>
             </div>
           </section>
         </div>
       </div>
     </div>
-  )
+  );
 
-  if (loading) return <div className="text-white">Loading...</div>
-  if (error) return <div className="text-red-500">Error: {error}</div>
+  if (loading) return <div className="text-white">Loading...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
     <div className="container mx-auto p-4 text-white">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Applications ({filteredApplications.length})</h1>
+        <h1 className="text-2xl font-bold">
+          Applications ({filteredApplications.length})
+        </h1>
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -202,12 +242,14 @@ export default function AdminPage() {
               className="pl-10 bg-gray-800 border-gray-700 text-white w-64"
             />
           </div>
-          <button 
+          <button
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </button>
         </div>
@@ -255,5 +297,5 @@ export default function AdminPage() {
 
       {selectedApp && <DetailModal application={selectedApp} />}
     </div>
-  )
-} 
+  );
+}
