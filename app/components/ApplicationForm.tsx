@@ -140,14 +140,7 @@ const formSchema = z.object({
     ),
   previousProjects: z
     .string()
-    .refine(
-      (val) => countWords(val) >= 5,
-      "Please provide at least 5 words about your previous projects"
-    )
-    .refine(
-      (val) => countWords(val) <= 100,
-      "Response is too long (max 100 words)"
-    ),
+    .min(1, "Please provide at least one project link"),
   teamExperienceDescription: z
     .string()
     .refine(
@@ -361,7 +354,7 @@ export default function ApplicationForm() {
               )}
               {renderTextarea(
                 "teamExperienceDescription",
-                "Describe Your Team's Experience in Game Development (Max 300 words)",
+                "Describe Your Team's Experience in Game Launch (Max 300 words)",
                 300
               )}
             </CardContent>
