@@ -1,18 +1,52 @@
-import ApplicationForm from "./components/ApplicationForm"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black">
-      <main className="container mx-auto px-4 py-8">
-        <div className="bg-gray-900 rounded-lg shadow-lg p-8 mb-8">
-          <h1 className="text-3xl font-bold mb-4 text-center text-cyan-400">MML Game Design and Development Competition</h1>
-          <p className="text-lg text-center mb-8 text-gray-300">
-            Showcase your game development skills and compete for 30000 Robux!
-          </p>
-          <ApplicationForm />
-        </div>
-      </main>
-    </div>
-  )
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between text-sm">
+        <Card className="w-full">
+          <CardContent className="pt-6 text-center">
+            <div className="mb-8">
+              <Image
+                src="/images/metaminding-logo.png"
+                alt="MetaMinding Lab Logo"
+                width={200}
+                height={200}
+                className="mx-auto"
+              />
+            </div>
+            <h1 className="text-3xl font-bold mb-6">
+              Application Period Has Ended
+            </h1>
+            <p className="text-lg mb-6">
+              Thank you for your interest in the MML Roblox Game and Development
+              Competition. The application period has now closed.
+            </p>
+            <p className="text-lg mb-8">
+              For all details about the competition and future updates, please
+              join our Discord server.
+            </p>
+            <Button
+              asChild
+              className="bg-[#5865F2] hover:bg-[#4752C4] flex items-center gap-2"
+            >
+              <Link href="https://discord.gg/TF7GXpkt" target="_blank">
+                <Image
+                  src="/images/Discord-logo.png"
+                  alt="Discord Logo"
+                  width={24}
+                  height={24}
+                  className="inline-block"
+                />
+                Join MetaMinding Lab Discord
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
+  );
 }
-
