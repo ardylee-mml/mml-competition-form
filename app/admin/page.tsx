@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Application } from "@/lib/storage";
 import { RefreshCw, X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function AdminPage() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -71,6 +72,24 @@ export default function AdminPage() {
       await fetchApplications();
     } catch (error) {
       console.error("Error deleting application:", error);
+    }
+  };
+
+  const downloadData = async (format: "csv" | "json") => {
+    try {
+      const response = await fetch(`/api/admin/download?format=${format}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `applications.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch (error) {
+      console.error("Error downloading data:", error);
+      alert("Failed to download data. Please try again.");
     }
   };
 
@@ -226,7 +245,24 @@ export default function AdminPage() {
   if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4 text-white">
+    <div className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <div className="flex gap-4">
+          <Button
+            onClick={() => downloadData("csv")}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Download CSV
+          </Button>
+          <Button
+            onClick={() => downloadData("json")}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Download JSON
+          </Button>
+        </div>
+      </div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">
           Applications ({filteredApplications.length})
